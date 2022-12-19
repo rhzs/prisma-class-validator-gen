@@ -8,7 +8,7 @@ export default function generateEnum(
   enumItem: PrismaDMMF.DatamodelEnum,
 ) {
   const dirPath = path.resolve(outputDir, 'enums');
-  const filePath = path.resolve(dirPath, `${enumItem.name}.enum.ts`);
+  const filePath = path.resolve(dirPath, `${enumItem.name}.ts`);
   const sourceFile = project.createSourceFile(filePath, undefined, {
     overwrite: true,
   });
