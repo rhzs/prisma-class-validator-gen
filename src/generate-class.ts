@@ -19,7 +19,7 @@ export default async function generateClass(
   outputDir: string,
   model: PrismaDMMF.Model,
 ) {
-  const dirPath = path.resolve(outputDir, 'models');
+  const dirPath = path.resolve(outputDir, 'entities');
   const filePath = path.resolve(dirPath, `${model.name}.ts`);
   const sourceFile = project.createSourceFile(filePath, undefined, {
     overwrite: true,
