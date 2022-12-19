@@ -30,13 +30,13 @@ export async function generate(options: GeneratorOptions) {
   });
 
   if (enumNames.size > 0) {
-    let enumDir = parseEnvValue(options.generator.enumDir as EnvValue);
+    let enumDir = options.generator.config.enumDir as string;
     if (!enumDir) {
       enumDir = "enums";
     }
 
     const enumsIndexSourceFile = project.createSourceFile(
-      path.resolve(outputDir, enumDir, 'index.ts'),
+      path.resolve(outputDir, 'enums', 'index.ts'),
       undefined,
       { overwrite: true },
     );
@@ -54,9 +54,9 @@ export async function generate(options: GeneratorOptions) {
   );
   generateHelpersIndexFile(helpersIndexSourceFile);
 
-  let modelDir = parseEnvValue(options.generator.modelDir as EnvValue);
+  let modelDir = options.generator.config.modelDir as string;
   if (!modelDir) {
-    modelDir = 'models';
+    modelDir = 'entities';
   }
 
   generateModelsIndexFile(prismaClientDmmf, project, outputDir, modelDir);

@@ -1,18 +1,16 @@
-import { PropertyDeclarationStructure, OptionalKind, Project } from 'ts-morph';
-import path from 'path';
 import type { DMMF as PrismaDMMF } from '@prisma/generator-helper';
-import {
-  generatePrismaImport,
-  generateEnumImports,
-  generateHelpersImports,
-  shouldImportHelpers,
-} from './helpers';
+import path from 'path';
+import { OptionalKind, Project, PropertyDeclarationStructure } from 'ts-morph';
 import {
   generateClassValidatorImport,
+  generateEnumImports,
+  generateHelpersImports,
+  generatePrismaImport,
   generateRelationImportsImport,
   getDecoratorsByFieldType,
   getDecoratorsImportsByType,
   getTSDataTypeFromFieldType,
+  shouldImportHelpers,
   shouldImportPrisma,
 } from './helpers';
 
@@ -62,7 +60,7 @@ export default async function generateClass(
     isExported: true,
     properties: [
       ...model.fields.map<OptionalKind<PropertyDeclarationStructure>>(
-        (field: PrismaDMMF.field) => {
+        (field: PrismaDMMF.Field) => {
           return {
             name: field.name,
             type: getTSDataTypeFromFieldType(field),
