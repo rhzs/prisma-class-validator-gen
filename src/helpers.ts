@@ -12,7 +12,7 @@ export const generateModelsIndexFile = (
   prismaClientDmmf: PrismaDMMF.Document,
   project: Project,
   outputDir: string,
-  modelDir: string = "models",
+  modelDir: string = 'models',
 ) => {
   const modelsBarrelExportSourceFile = project.createSourceFile(
     path.resolve(outputDir, modelDir, 'index.ts'),
@@ -165,10 +165,12 @@ export const generateRelationImportsImport = (
   sourceFile: SourceFile,
   relationImports: Array<string>,
 ) => {
-  sourceFile.addImportDeclaration({
-    moduleSpecifier: './',
-    namedImports: relationImports,
-  });
+  if (relationImports.length) {
+    sourceFile.addImportDeclaration({
+      moduleSpecifier: './',
+      namedImports: relationImports,
+    });
+  }
 };
 export const generateHelpersImports = (
   sourceFile: SourceFile,
@@ -202,7 +204,7 @@ export function generateEnumsIndexFile(
 ) {
   sourceFile.addExportDeclarations(
     enumNames.sort().map<OptionalKind<ExportDeclarationStructure>>((name) => ({
-      moduleSpecifier: `./${name}.enum`,
+      moduleSpecifier: `./${name}`,
       namedExports: [name],
     })),
   );
