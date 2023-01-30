@@ -32,7 +32,7 @@ export const generateModelsIndexFile = (
 };
 
 export const shouldImportPrisma = (fields: PrismaDMMF.Field[]) => {
-  return fields.some((field) => ['Decimal', 'Json'].includes(field.type));
+  return fields.some((field) => ['Json'].includes(field.type));
 };
 
 export const shouldImportHelpers = (fields: PrismaDMMF.Field[]) => {
@@ -56,7 +56,7 @@ export const getTSDataTypeFromFieldType = (field: PrismaDMMF.Field) => {
       type = 'boolean';
       break;
     case 'Decimal':
-      type = 'Prisma.Decimal';
+      type = 'number';
       break;
     case 'Json':
       type = 'Prisma.JsonValue';
@@ -108,6 +108,12 @@ export const getDecoratorsByFieldType = (field: PrismaDMMF.Field) => {
       arguments: [],
     });
   }
+  if (field.type === 'Decimal') {
+    decorators.unshift({
+      name: 'Type',
+      arguments: ['() => Number'],
+    });
+  }
   if (field.kind === 'enum') {
     decorators.push({
       name: 'IsIn',
@@ -144,12 +150,34 @@ export const getDecoratorsImportsByType = (field: PrismaDMMF.Field) => {
   return [...validatorImports];
 };
 
+export const getTransformerDecoratorsImportsByType = (
+  field: PrismaDMMF.Field,
+) => {
+  const transformerImports = new Set();
+  switch (field.type) {
+    case 'Decimal':
+      transformerImports.add('Type');
+      break;
+  }
+  return [...transformerImports];
+};
+
 export const generateClassValidatorImport = (
   sourceFile: SourceFile,
   validatorImports: Array<string>,
 ) => {
   sourceFile.addImportDeclaration({
     moduleSpecifier: 'class-validator',
+    namedImports: validatorImports,
+  });
+};
+
+export const generateClassTransformerImport = (
+  sourceFile: SourceFile,
+  validatorImports: Array<string>,
+) => {
+  sourceFile.addImportDeclaration({
+    moduleSpecifier: 'class-transformer',
     namedImports: validatorImports,
   });
 };

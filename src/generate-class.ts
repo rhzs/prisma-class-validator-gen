@@ -2,6 +2,7 @@ import type { DMMF as PrismaDMMF } from '@prisma/generator-helper';
 import path from 'path';
 import { OptionalKind, Project, PropertyDeclarationStructure } from 'ts-morph';
 import {
+  generateClassTransformerImport,
   generateClassValidatorImport,
   generateEnumImports,
   generateHelpersImports,
@@ -9,6 +10,7 @@ import {
   generateRelationImportsImport,
   getDecoratorsByFieldType,
   getDecoratorsImportsByType,
+  getTransformerDecoratorsImportsByType,
   getTSDataTypeFromFieldType,
   shouldImportHelpers,
   shouldImportPrisma,
@@ -25,6 +27,22 @@ export default async function generateClass(
     overwrite: true,
   });
 
+  if (shouldImportPrisma(model.fields)) {
+    generatePrismaImport(sourceFile);
+  }
+
+  const transformerImports = [
+    ...new Set(
+      model.fields
+        .map((field) => getTransformerDecoratorsImportsByType(field))
+        .flatMap((item) => item),
+    ),
+  ];
+  generateClassTransformerImport(
+    sourceFile,
+    transformerImports as Array<string>,
+  );
+
   const validatorImports = [
     ...new Set(
       model.fields
@@ -32,19 +50,14 @@ export default async function generateClass(
         .flatMap((item) => item),
     ),
   ];
-
-  if (shouldImportPrisma(model.fields)) {
-    generatePrismaImport(sourceFile);
-  }
-
   generateClassValidatorImport(sourceFile, validatorImports as Array<string>);
+
   const relationImports = new Set();
   model.fields.forEach((field) => {
     if (field.relationName && model.name !== field.type) {
       relationImports.add(field.type);
     }
   });
-
   generateRelationImportsImport(sourceFile, [
     ...relationImports,
   ] as Array<string>);
@@ -61,6 +74,12 @@ export default async function generateClass(
     properties: [
       ...model.fields.map<OptionalKind<PropertyDeclarationStructure>>(
         (field: PrismaDMMF.Field) => {
+          // force object to be optional
+          // useful for DATABASE without Foreign Key concept
+          if (field.kind === 'object') {
+            field.isRequired = false;
+          }
+
           return {
             name: field.name,
             type: getTSDataTypeFromFieldType(field),

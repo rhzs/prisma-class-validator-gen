@@ -26,11 +26,12 @@ model Post {
   content   String?
   published Boolean  @default(false)
   viewCount Int      @default(0)
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  Int?
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
   rating    Float
 }
 
 model Unrelated {
-  id Int @id @default(autoincrement())
+  id   Int     @id @default(autoincrement())
+  deci Decimal
 }
