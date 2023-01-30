@@ -16,6 +16,7 @@ model User {
   email String  @unique
   name  String?
   posts Post[]
+  Test  Test[]
 }
 
 model Post {
@@ -29,6 +30,12 @@ model Post {
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
   rating    Float
+}
+
+model Test {
+  id       Int  @id @default(autoincrement())
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id])
 }
 
 model Unrelated {

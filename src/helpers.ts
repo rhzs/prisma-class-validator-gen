@@ -144,6 +144,9 @@ export const getDecoratorsImportsByType = (field: PrismaDMMF.Field) => {
   } else {
     validatorImports.add('IsOptional');
   }
+  if (field.kind === 'object') {
+    validatorImports.add('IsOptional');
+  }
   if (field.kind === 'enum') {
     validatorImports.add('IsIn');
   }
